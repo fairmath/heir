@@ -86,3 +86,50 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
 set(HEIRLIBDIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_subdirectory(lib)
 add_subdirectory(tools)
+
+
+install(DIRECTORY ${CMAKE_BINARY_DIR}/lib/
+        DESTINATION include
+        FILES_MATCHING PATTERN "*.h"
+        PATTERN "*.h.inc"
+        PATTERN "*.cpp.inc"
+)
+
+install(DIRECTORY ${CMAKE_BINARY_DIR}/lib/
+        DESTINATION include/lib
+        FILES_MATCHING PATTERN "*.h"
+        PATTERN "*.h.inc"
+        PATTERN "*.cpp.inc"
+)
+
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/lib/
+        DESTINATION include
+        FILES_MATCHING PATTERN "*.h"
+        PATTERN "*.h.inc"
+        PATTERN "*.cpp.inc"
+        PATTERN "include/*.h"
+        PATTERN "include/*.h.inc"
+        PATTERN "include/*.cpp.inc"
+)
+
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/lib/
+        DESTINATION include/lib
+        FILES_MATCHING PATTERN "*.h"
+        PATTERN "*.h.inc"
+        PATTERN "*.cpp.inc"
+        PATTERN "include/*.h"
+        PATTERN "include/*.h.inc"
+        PATTERN "include/*.cpp.inc"
+)
+
+foreach(lib ${HEIR_LIBS})
+    install(TARGETS ${lib}
+            ARCHIVE DESTINATION lib
+            LIBRARY DESTINATION lib
+            RUNTIME DESTINATION bin)
+endforeach()
+
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/cmake/modules/
+        DESTINATION lib/cmake/HEIR
+        FILES_MATCHING PATTERN "*.cmake"
+)
