@@ -10,6 +10,7 @@
 #include "lib/Conversion/CGGIToTfheRustBool/CGGIToTfheRustBool.h"
 #include "lib/Conversion/CombToCGGI/CombToCGGI.h"
 #include "lib/Conversion/LWEToPolynomial/LWEToPolynomial.h"
+#include "lib/Conversion/LinalgToTensorExt/LinalgToTensorExt.h"
 #include "lib/Conversion/MemrefToArith/MemrefToArith.h"
 #include "lib/Conversion/ModArithToArith/ModArithToArith.h"
 #include "lib/Conversion/PolynomialToStandard/PolynomialToStandard.h"
@@ -45,7 +46,9 @@
 #include "lib/Dialect/TfheRustBool/IR/TfheRustBoolDialect.h"
 #include "lib/Transforms/ApplyFolders/ApplyFolders.h"
 #include "lib/Transforms/ConvertIfToSelect/ConvertIfToSelect.h"
+#include "lib/Transforms/ConvertSecretExtractToStaticExtract/ConvertSecretExtractToStaticExtract.h"
 #include "lib/Transforms/ConvertSecretForToStaticFor/ConvertSecretForToStaticFor.h"
+#include "lib/Transforms/ConvertSecretInsertToStaticInsert/ConvertSecretInsertToStaticInsert.h"
 #include "lib/Transforms/ConvertSecretWhileToStaticFor/ConvertSecretWhileToStaticFor.h"
 #include "lib/Transforms/ElementwiseToAffine/ElementwiseToAffine.h"
 #include "lib/Transforms/ForwardStoreToLoad/ForwardStoreToLoad.h"
@@ -88,6 +91,7 @@
 #include "mlir/include/mlir/Dialect/Func/IR/FuncOps.h"  // from @llvm-project
 #include "mlir/include/mlir/Dialect/Func/Transforms/Passes.h"  // from @llvm-project
 #include "mlir/include/mlir/Dialect/LLVMIR/LLVMDialect.h"  // from @llvm-project
+#include "mlir/include/mlir/Dialect/Linalg/IR/Linalg.h"    // from @llvm-project
 #include "mlir/include/mlir/Dialect/Linalg/Passes.h"       // from @llvm-project
 #include "mlir/include/mlir/Dialect/Linalg/Transforms/BufferizableOpInterfaceImpl.h"  // from @llvm-project
 #include "mlir/include/mlir/Dialect/Math/IR/Math.h"      // from @llvm-project
@@ -516,6 +520,7 @@ int main(int argc, char **argv) {
 
   // Add expected MLIR dialects to the registry.
   registry.insert<LLVM::LLVMDialect>();
+  registry.insert<::mlir::linalg::LinalgDialect>();
   registry.insert<TosaDialect>();
   registry.insert<affine::AffineDialect>();
   registry.insert<arith::ArithDialect>();
@@ -578,7 +583,7 @@ int main(int argc, char **argv) {
   bufferization::func_ext::registerBufferizableOpInterfaceExternalModels(
       registry);
   cf::registerBufferizableOpInterfaceExternalModels(registry);
-  linalg::registerBufferizableOpInterfaceExternalModels(registry);
+  mlir::linalg::registerBufferizableOpInterfaceExternalModels(registry);
   scf::registerBufferizableOpInterfaceExternalModels(registry);
   tensor::registerBufferizableOpInterfaceExternalModels(registry);
 
@@ -595,6 +600,8 @@ int main(int argc, char **argv) {
   registerConvertIfToSelectPasses();
   registerConvertSecretForToStaticForPasses();
   registerConvertSecretWhileToStaticForPasses();
+  registerConvertSecretExtractToStaticExtractPasses();
+  registerConvertSecretInsertToStaticInsertPasses();
   registerApplyFoldersPasses();
   registerForwardStoreToLoadPasses();
   registerOperationBalancerPasses();
@@ -630,6 +637,7 @@ int main(int argc, char **argv) {
   bgv::registerBGVToOpenfhePasses();
   comb::registerCombToCGGIPasses();
   lwe::registerLWEToPolynomialPasses();
+  ::mlir::heir::linalg::registerLinalgToTensorExtPasses();
   ::mlir::heir::polynomial::registerPolynomialToStandardPasses();
   registerCGGIToJaxitePasses();
   registerCGGIToTfheRustPasses();

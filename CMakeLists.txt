@@ -88,6 +88,7 @@ add_subdirectory(lib)
 add_subdirectory(tools)
 
 
+
 install(DIRECTORY ${CMAKE_BINARY_DIR}/lib/
         DESTINATION include
         FILES_MATCHING PATTERN "*.h"
@@ -133,3 +134,6 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/cmake/modules/
         DESTINATION lib/cmake/HEIR
         FILES_MATCHING PATTERN "*.cmake"
 )
+
+add_subdirectory(tests)
+
