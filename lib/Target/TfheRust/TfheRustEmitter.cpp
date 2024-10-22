@@ -13,10 +13,10 @@
 #include "lib/Dialect/TfheRust/IR/TfheRustDialect.h"
 #include "lib/Dialect/TfheRust/IR/TfheRustOps.h"
 #include "lib/Dialect/TfheRust/IR/TfheRustTypes.h"
-#include "lib/Graph/Graph.h"
 #include "lib/Target/TfheRust/TfheRustTemplates.h"
 #include "lib/Target/TfheRust/Utils.h"
-#include "lib/Target/Utils.h"
+#include "lib/Utils/Graph/Graph.h"
+#include "lib/Utils/TargetUtils/TargetUtils.h"
 #include "llvm/include/llvm/ADT/STLExtras.h"           // from @llvm-project
 #include "llvm/include/llvm/ADT/SmallVector.h"         // from @llvm-project
 #include "llvm/include/llvm/ADT/TypeSwitch.h"          // from @llvm-project
@@ -739,10 +739,7 @@ LogicalResult TfheRustEmitter::printOperation(memref::LoadOp op) {
     emitAssignPrefix(op.getResult());
     bool isRef =
         isa<tfhe_rust::TfheRustDialect>(op.getResult().getType().getDialect());
-    bool storeUse = llvm::all_of(op.getResult().getUsers(), [](Operation *op) {
-      return isa<memref::StoreOp>(*op);
-    });
-    os << ((isRef && !storeUse) ? "&" : "");
+    os << (isRef ? "&" : "");
     printLoadOp(op);
     os << ";\n";
   }

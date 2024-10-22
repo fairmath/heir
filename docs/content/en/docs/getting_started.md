@@ -110,10 +110,10 @@ harness to call into the HEIR-generated functions.
 Note: other backends are similar, but the different backends are in varying
 stages of development.
 
-The input program is in `tests/openfhe/end_to_end/dot_product_8.mlir`. Support
-for standard input languages like `C` and `C++` are currently experimental at
-best, but eventually we would use an MLIR-based tool to convert an input
-language to MLIR like in that file. The program is below:
+The input program is in `tests/Examples/openfhe/dot_product_8.mlir`. Support for
+standard input languages like `C` and `C++` are currently experimental at best,
+but eventually we would use an MLIR-based tool to convert an input language to
+MLIR like in that file. The program is below:
 
 ```mlir
 func.func @dot_product(%arg0: tensor<8xi16>, %arg1: tensor<8xi16>) -> i16 {
@@ -139,7 +139,7 @@ Now we run the `heir-opt` command to optimize and compile the program.
 ```bash
 bazel run //tools:heir-opt -- \
 --mlir-to-openfhe-bgv='entry-function=dot_product ciphertext-degree=8' \
-$PWD/tests/openfhe/end_to_end/dot_product_8.mlir > output.mlir
+$PWD/tests/Examples/openfhe/dot_product_8.mlir > output.mlir
 ```
 
 This produces a file in the `openfhe` exit dialect (part of HEIR). The raw
@@ -306,19 +306,12 @@ Where `dot_product_main.cpp` is a new file containing
 #include "heir_output.h"
 
 int main(int argc, char *argv[]) {
-  CCParams<CryptoContextBGVRNS> parameters;
-  // TODO(#661): replace this setup with a HEIR-generated helper function
-  parameters.SetMultiplicativeDepth(2);
-  parameters.SetPlaintextModulus(65537);
-  CryptoContext<DCRTPoly> cryptoContext = GenCryptoContext(parameters);
-  cryptoContext->Enable(PKE);
-  cryptoContext->Enable(KEYSWITCH);
-  cryptoContext->Enable(LEVELEDSHE);
+  CryptoContext<DCRTPoly> cryptoContext = dot_product__generate_crypto_context();
 
   KeyPair<DCRTPoly> keyPair;
   keyPair = cryptoContext->KeyGen();
-  cryptoContext->EvalMultKeyGen(keyPair.secretKey);
-  cryptoContext->EvalRotateKeyGen(keyPair.secretKey, {1, 2, 4, 7});
+
+  cryptoContext = dot_product__configure_crypto_context(cryptoContext, keyPair.secretKey);
 
   int32_t n = cryptoContext->GetCryptoParameters()
                   ->GetElementParams()
@@ -382,8 +375,8 @@ input files. You can also access the underlying binary at
 
 ```bash
 bazel run //tools:heir-opt -- \
-  --comb-to-cggi -cse \
-  $PWD/tests/comb_to_cggi/add_one.mlir
+  --secret-to-cggi -cse \
+  $PWD/tests/Dialect/Secret/Conversions/secret_to_cggi/add_one.mlir
 ```
 
 To convert an existing lit test to a `bazel run` command for manual tweaking and

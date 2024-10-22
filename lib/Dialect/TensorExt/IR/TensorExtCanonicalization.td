@@ -2,7 +2,7 @@
 #define LIB_DIALECT_TENSOREXT_IR_TENSOREXTCANONICALIZATION_TD_
 
 include "TensorExtOps.td"
-include "lib/DRR/Utils.td"
+include "lib/Utils/DRR/Utils.td"
 include "mlir/Dialect/Arith/IR/ArithOps.td"
 include "mlir/Dialect/Tensor/IR/TensorOps.td"
 include "mlir/IR/PatternBase.td"
@@ -15,6 +15,12 @@ def OutOfBoundsOfTensorDim :
       "llvm::cast<mlir::ShapedType>($1.getType()).getShape()[0]"
     >
   >;
+
+def IsOneDimTensor : Constraint<
+  CPred<
+    "llvm::cast<mlir::ShapedType>($0.getType()).getRank() == 1"
+  >
+>;
 
 // rotate %t, 0 -> %t
 def DropZeroRotation : Pat<
@@ -35,7 +41,8 @@ def NormalizeRotationIndex : Pat<
           (Tensor_DimOp $tensor, (Arith_ConstantOp ConstantAttr<IndexAttr, "0">)),
           $shiftOp))
       ),
-  [(OutOfBoundsOfTensorDim $shiftAmount, $tensor)]
+  [(OutOfBoundsOfTensorDim $shiftAmount, $tensor),
+   (IsOneDimTensor $tensor)]
 >;
 
 // %0 = rotate %t, x
@@ -60,7 +67,7 @@ def RotatePlusExtractToIndexedExtract : Pat<
     (MakeSingleResultVariadic (Arith_AddIOp $shift, $index, DefOverflow)))
 >;
 
-foreach ArithOp = [Arith_AddIOp, Arith_SubIOp, Arith_MulIOp] in {
+foreach ArithOp = [Arith_AddIOp, Arith_SubIOp, Arith_MulIOp, Arith_AddFOp, Arith_SubFOp, Arith_MulFOp] in {
   // Rotating two tensors by the same amount can be converted to a single
   // post-rotation. This can result in eliminating either the rotation (because
   // it can be combined with a later rotation) or the arith op itself, if it is

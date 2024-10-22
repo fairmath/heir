@@ -30,6 +30,20 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "Patterns",
+    hdrs = [
+        "LWEPatterns.h",
+    ],
+    deps = [
+        ":Dialect",
+        "@llvm-project//mlir:ArithDialect",
+        "@llvm-project//mlir:IR",
+        "@llvm-project//mlir:Support",
+        "@llvm-project//mlir:TransformUtils",
+    ],
+)
+
 td_library(
     name = "td_files",
     srcs = [
@@ -38,6 +52,8 @@ td_library(
         "LWEOps.td",
         "LWETraits.td",
         "LWETypes.td",
+        "NewLWEAttributes.td",
+        "NewLWETypes.td",
     ],
     # include from the heir-root to enable fully-qualified include-paths
     includes = ["../../../.."],
@@ -86,6 +102,18 @@ gentbl_cc_library(
                 "-gen-attrdef-defs",
             ],
             "LWEAttributes.cpp.inc",
+        ),
+        (
+            [
+                "-gen-enum-decls",
+            ],
+            "LWEEnums.h.inc",
+        ),
+        (
+            [
+                "-gen-enum-defs",
+            ],
+            "LWEEnums.cpp.inc",
         ),
         (
             ["-gen-attrdef-doc"],

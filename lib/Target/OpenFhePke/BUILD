@@ -6,9 +6,37 @@ package(
 )
 
 cc_library(
+    name = "OpenFheRegistration",
+    srcs = [
+        "OpenFheTranslateRegistration.cpp",
+    ],
+    hdrs = [
+        "OpenFheTranslateRegistration.h",
+    ],
+    deps = [
+        ":OpenFhePkeEmitter",
+        ":OpenFhePkeHeaderEmitter",
+        ":OpenFheUtils",
+        "@heir//lib/Analysis/SelectVariableNames",
+        "@heir//lib/Dialect/LWE/IR:Dialect",
+        "@heir//lib/Dialect/Openfhe/IR:Dialect",
+        "@heir//lib/Utils/TargetUtils",
+        "@llvm-project//llvm:Support",
+        "@llvm-project//mlir:ArithDialect",
+        "@llvm-project//mlir:FuncDialect",
+        "@llvm-project//mlir:IR",
+        "@llvm-project//mlir:PolynomialDialect",
+        "@llvm-project//mlir:Support",
+        "@llvm-project//mlir:TensorDialect",
+        "@llvm-project//mlir:TranslateLib",
+    ],
+)
+
+cc_library(
     name = "OpenFheUtils",
     srcs = ["OpenFheUtils.cpp"],
     hdrs = [
+        "OpenFhePkeTemplates.h",
         "OpenFheUtils.h",
     ],
     deps = [
@@ -26,22 +54,19 @@ cc_library(
     srcs = ["OpenFhePkeEmitter.cpp"],
     hdrs = [
         "OpenFhePkeEmitter.h",
-        "OpenFhePkeTemplates.h",
     ],
     deps = [
         ":OpenFheUtils",
         "@heir//lib/Analysis/SelectVariableNames",
         "@heir//lib/Dialect/LWE/IR:Dialect",
         "@heir//lib/Dialect/Openfhe/IR:Dialect",
-        "@heir//lib/Target:Utils",
+        "@heir//lib/Utils/TargetUtils",
         "@llvm-project//llvm:Support",
         "@llvm-project//mlir:ArithDialect",
         "@llvm-project//mlir:FuncDialect",
         "@llvm-project//mlir:IR",
-        "@llvm-project//mlir:PolynomialDialect",
         "@llvm-project//mlir:Support",
         "@llvm-project//mlir:TensorDialect",
-        "@llvm-project//mlir:TranslateLib",
     ],
 )
 
@@ -55,15 +80,12 @@ cc_library(
     deps = [
         ":OpenFheUtils",
         "@heir//lib/Analysis/SelectVariableNames",
-        "@heir//lib/Dialect/LWE/IR:Dialect",
         "@heir//lib/Dialect/Openfhe/IR:Dialect",
-        "@heir//lib/Target:Utils",
+        "@heir//lib/Utils/TargetUtils",
         "@llvm-project//llvm:Support",
         "@llvm-project//mlir:ArithDialect",
         "@llvm-project//mlir:FuncDialect",
         "@llvm-project//mlir:IR",
-        "@llvm-project//mlir:PolynomialDialect",
         "@llvm-project//mlir:Support",
-        "@llvm-project//mlir:TranslateLib",
     ],
 )

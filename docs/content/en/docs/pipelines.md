@@ -41,7 +41,7 @@ The pass pipeline assumes that the input is a valid TOSA MLIR model with
 stripped quantized types. The
 [iree-import-tflite](https://iree.dev/guides/ml-frameworks/tflite) tool can
 lower a TFLite FlatBuffer to textual MLIR with `--output-format=mlir-ir`. See
-[hello_world.tosa.mlir](https://github.com/google/heir/blob/main/tests/verilog/hello_world.tosa.mlir)
+[hello_world.tosa.mlir](https://github.com/google/heir/blob/main/tests/Emitter/verilog/hello_world.tosa.mlir)
 for an example.
 
 ### `--yosys-optimizer`
@@ -85,7 +85,7 @@ The library is based on the CGGI cryptosystem, and so this pass is most useful
 when paired with lowerings from the `cggi` dialect.
 
 The version of `tfhe-rs` supported is defined in the
-[end to end `tfhe_rust` tests](https://github.com/google/heir/tree/main/tests/tfhe_rust/end_to_end/Cargo.toml).
+[end to end `tfhe_rust` tests](https://github.com/google/heir/tree/main/tests/Examples/tfhe_rust/Cargo.toml).
 
 Example input:
 

@@ -560,6 +560,12 @@ LogicalResult HoistPlaintextOps::matchAndRewrite(
     if (isa<YieldOp>(op)) {
       return false;
     }
+    // Conservatively preserve a complex op with a nested region
+    // This could be a replaced with a recursive call to check that all of the
+    // regions' operations can be hoisted.
+    if (op.getNumRegions() != 0) {
+      return false;
+    }
     LLVM_DEBUG(llvm::dbgs()
                << "Considering whether " << op << " can be hoisted\n");
     if (!isSpeculatable(&op)) {
@@ -730,6 +736,7 @@ LogicalResult extractGenericBody(secret::GenericOp genericOp,
   std::string funcName = llvm::formatv(
       "internal_generic_{0}", mlir::hash_value(yieldOp.getValues()[0]));
   auto func = builder.create<func::FuncOp>(module.getLoc(), funcName, type);
+  func.setPrivate();
 
   // Populate function body by cloning the ops in the inner body and mapping
   // the func args and func outputs.
